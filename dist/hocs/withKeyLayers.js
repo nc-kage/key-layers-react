@@ -54,9 +54,11 @@ const componentGenerator = (Comp, config = {}) => {
             };
         }
         render() {
-            return (react_1.default.createElement(Comp, Object.assign({ ref: (r) => {
+            return (react_1.default.createElement(Comp, Object.assign({}, (typeof Comp === 'function') ? {} : {
+                ref: (r) => {
                     this.originalRef = r;
-                } }, this.getAdditionalProps(), this.props)));
+                }
+            }, this.getAdditionalProps(), this.props)));
         }
     }
     return components_1.copyStaticProps(Comp, WithKeyEventsComp);

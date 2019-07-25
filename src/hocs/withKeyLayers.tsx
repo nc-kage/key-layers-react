@@ -103,8 +103,10 @@ const componentGenerator = (
 
     render() {
       return (<Comp
-        ref={(r: React.ReactNode) => {
-          this.originalRef = r;
+        {...(typeof Comp === 'function') ? {} :{
+          ref: (r: React.ReactNode) => {
+            this.originalRef = r;
+          }
         }}
         {...this.getAdditionalProps()}
         {...this.props}
