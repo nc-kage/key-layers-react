@@ -119,7 +119,7 @@ const componentGenerator = (
 };
 
 const withKeyLayer = (
-  param?: boolean | number | string | (new () => Component<any, any>) | (new () => FunctionComponent<any>),
+  param?: any,
   config?: {
     releaseDelay?: number;
     addListenerMethodName?: string;
@@ -129,9 +129,7 @@ const withKeyLayer = (
   if (typeof param !== 'boolean' && typeof param !== 'number' && typeof param !== 'string') {
     return componentGenerator(param as new () => Component<any, any>, config);
   }
-  return (
-    Comp: (new () => Component<any, any>) | (new () => FunctionComponent<any>),
-  ): new () => Component<any, any> => {
+  return (Comp: any): new () => Component<any, any> => {
     return componentGenerator(Comp as new () => Component<any, any>, { layerIndex: param });
   };
 };
