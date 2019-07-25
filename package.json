@@ -1,6 +1,6 @@
 {
   "name": "key-layers-react",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Pavlo Gusar",
   "license": "MIT",
   "main": "dist/index.js",
