@@ -90,8 +90,8 @@ const componentGenerator = (
       return {
         [addListenerMethodName]: (
           type: string, callback: (e: KeyboardEvent) => void, options: ListenerOptionsType,
-        ) => {
-          emitter.addListener.call(emitter, type, callback, options);
+        ): (type: string, callback: (e: KeyboardEvent) => void) => void => {
+          return emitter.addListener.call(emitter, type, callback, options);
         },
         [removeListenerMethodName]: (
           type: string, callback: (e: KeyboardEvent) => void,

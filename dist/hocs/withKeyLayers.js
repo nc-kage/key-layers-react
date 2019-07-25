@@ -46,7 +46,7 @@ const componentGenerator = (Comp, config = {}) => {
             const { emitter } = this;
             return {
                 [addListenerMethodName]: (type, callback, options) => {
-                    emitter.addListener.call(emitter, type, callback, options);
+                    return emitter.addListener.call(emitter, type, callback, options);
                 },
                 [removeListenerMethodName]: (type, callback) => {
                     emitter.removeListener.call(emitter, type, callback);
