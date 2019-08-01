@@ -1,6 +1,6 @@
 {
   "name": "key-layers-react",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "Pavlo Gusar",
   "license": "MIT",
   "main": "dist/index.js",
@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@types/react": "16.8.23",
-    "key-layers-js": "0.0.7",
+    "key-layers-js": "^0.0.8",
     "react": "^16.8.6"
   },
   "devDependencies": {
