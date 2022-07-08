@@ -1,11 +1,1 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const withKeyLayers_1 = __importDefault(require("./hocs/withKeyLayers"));
-var key_layers_js_1 = require("key-layers-js");
-exports.Emitter = key_layers_js_1.Emitter;
-exports.EMITTER_TOP_LAYER_TYPE = key_layers_js_1.EMITTER_TOP_LAYER_TYPE;
-exports.EMITTER_FORCE_LAYER_TYPE = key_layers_js_1.EMITTER_FORCE_LAYER_TYPE;
-exports.withKeyLayer = withKeyLayers_1.default;
+import e,{Component as t,useRef as r,useMemo as n,useCallback as s,useEffect as o}from"react";import*as i from"key-layers-js";export{EMITTER_FORCE_LAYER_TYPE,EMITTER_TOP_LAYER_TYPE,Emitter}from"key-layers-js";const a={releaseDelay:void 0},l=(r,n={})=>{const{releaseDelay:s,layerIndex:o=!1,addListenerMethodName:l="addKeyListener",removeListenerMethodName:p="removeKeyListener"}=n;return((e,t)=>{const r=["length","name","prototype","WrappedComponent","displayName","childContextTypes","contextTypes","propTypes","caller","arguments"];return Object.getOwnPropertyNames(e).filter((e=>!r.includes(e))).forEach((r=>{"function"==typeof e[r]?t[r]=e[r].bind(e):t[r]=e[r]})),t})(r,class extends t{constructor(e){super(e),this.emitter=new i.Emitter(o,s||a.releaseDelay)}componentDidMount(){const{refs:e}=this.props;e&&e(this.originalRef)}componentWillUnmount(){this.emitter.destroy()}getAdditionalProps(){const{emitter:e}=this;return{[l]:(t,r,n)=>e.addListener.call(e,t,r,n),[p]:(t,r)=>{e.removeListener.call(e,t,r)}}}render(){return e.createElement(r,Object.assign({},"function"==typeof r?{}:{ref:e=>{this.originalRef=e}},this.getAdditionalProps(),this.props))}})},p=(e,t)=>["boolean","number","string"].includes(typeof e)?t=>l(t,{layerIndex:e}):l(e,t),c=(e,t)=>{const a=r({subscribeType:e,releaseDelay:t}),l=n((()=>new i.Emitter(a.current.subscribeType,a.current.releaseDelay)),[]),p=s(((e,t,r)=>{l.addListener(e,t,r)}),[l]),c=s(((e,t)=>{l.removeListener(e,t)}),[l]);return o((()=>{l.updateLayerType(e)}),[l,e]),o((()=>()=>{l.destroy()}),[l]),[p,c]};export{c as useKeyLayers,p as withKeyLayer};

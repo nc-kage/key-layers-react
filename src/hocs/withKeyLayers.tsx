@@ -1,4 +1,4 @@
-import React, { Component, FunctionComponent } from 'react';
+import React, { Component, FunctionComponent, FC } from 'react';
 import * as KeyLayers from 'key-layers-js';
 
 import { copyStaticProps } from '../utils/components';
@@ -6,6 +6,8 @@ import { copyStaticProps } from '../utils/components';
 export {
   Emitter, EMITTER_TOP_LAYER_TYPE, EMITTER_FORCE_LAYER_TYPE,
 } from 'key-layers-js';
+
+export type EventType = 'keyDown' | 'keyPress' | 'keyUp' | 'keyRelease' | 'pressRelease';
 
 type ListenerOptionsType = {
   code?: number;
@@ -19,7 +21,7 @@ type ListenerOptionsType = {
 
 type HocResultType = (new () => Component<any, any>)
   | ((Comp: (new () => Component<any, any>) | (new () => FunctionComponent<any>))
-    => (new () => Component<any, any>))
+    => (new () => Component<any, any>));
 
 const configGlobal: {
   releaseDelay?: number;
@@ -49,15 +51,17 @@ interface IWithKeyEventsCompProps {
   refs?: (ref: any) => void;
 }
 
+type ConfigType = {
+  layerIndex?: boolean | number | string;
+  releaseDelay?: number;
+  addListenerMethodName?: string;
+  removeListenerMethodName?: string;
+};
+
 const componentGenerator = (
-  Comp: (new () => Component<any, any>),
-  config: {
-    layerIndex?: boolean | number | string;
-    releaseDelay?: number;
-    addListenerMethodName?: string;
-    removeListenerMethodName?: string;
-  } = {},
-): new () => Component<any, any> => {
+  Comp: any,
+  config: ConfigType = {},
+): (new () => Component<any, any>) => {
   const {
     releaseDelay,
     layerIndex = false,
@@ -67,9 +71,10 @@ const componentGenerator = (
 
   class WithKeyEventsComp extends Component<IWithKeyEventsCompProps> {
     private readonly emitter: KeyLayers.Emitter;
+
     private originalRef?: React.ReactNode;
 
-    constructor(props: {}) {
+    constructor(props: { [key: string]: any }) {
       super(props);
       this.emitter = new KeyLayers.Emitter(layerIndex, releaseDelay || configGlobal.releaseDelay);
     }
@@ -102,38 +107,52 @@ const componentGenerator = (
     }
 
     render() {
-      return (<Comp
-        {...(typeof Comp === 'function') ? {} :{
-          ref: (r: React.ReactNode) => {
-            this.originalRef = r;
-          }
-        }}
-        {...this.getAdditionalProps()}
-        {...this.props}
-      />);
+      return (
+        <Comp
+          {...(typeof Comp === 'function') ? {} : {
+            ref: (r: React.ReactNode) => {
+              this.originalRef = r;
+            },
+          }}
+          {...this.getAdditionalProps()}
+          {...this.props}
+        />
+      );
     }
   }
 
-  return copyStaticProps<new () => Component<any, any>>(
+  return copyStaticProps<new() => Component<any, any>>(
     Comp,
     WithKeyEventsComp as unknown as new () => Component<any, any>,
   );
 };
 
-const withKeyLayer = (
-  param?: any,
+type ComponentType = (new () => Component<any, any>)
+  | (new () => FunctionComponent<any>) | (new () => FC<any>) | FC | FunctionComponent | Component;
+type SimpleParamsType = boolean | number | string | ComponentType;
+type ResultType<K> = K extends (boolean | number | string)
+  ? ((Comp: ComponentType, config?: ConfigType) => (new () => Component<any, any>))
+  : (new () => Component<any, any>);
+
+const withKeyLayer = <T extends SimpleParamsType>(
+  param?: T,
   config?: {
     releaseDelay?: number;
     addListenerMethodName?: string;
     removeListenerMethodName?: string;
   },
-): HocResultType => {
-  if (typeof param !== 'boolean' && typeof param !== 'number' && typeof param !== 'string') {
-    return componentGenerator(param as new () => Component<any, any>, config);
+): ResultType<T> => {
+  if (['boolean', 'number', 'string'].includes(typeof param)) {
+    return ((Comp: ComponentType): (new () => Component<any, any>) => {
+      return componentGenerator(
+        Comp as (new () => Component<any, any>) | FunctionComponent<any> | FC<any>,
+        { layerIndex: param as boolean | number | string },
+      );
+    }) as ResultType<T>;
   }
-  return (Comp: any): new () => Component<any, any> => {
-    return componentGenerator(Comp as new () => Component<any, any>, { layerIndex: param });
-  };
+  return componentGenerator(
+    param as (new () => Component<any, any>) | FunctionComponent<any> | FC<any>, config,
+  ) as ResultType<T>;
 };
 
 export default withKeyLayer;

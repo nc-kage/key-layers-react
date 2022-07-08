@@ -1,5 +1,5 @@
 # key-layers-react
-It's a High Order Component (HOC) for comfortable handling key events. If web application contains the several abstract layers such as file browsing, image preview, video preview etc. If active layer needs to handle own events and lock event handlers of the other layers, key-layers-react can help to resolve this task.
+It is a hook and High Order Component (HOC) for comfortable handling key events. If web application contains the several abstract layers such as file browsing, image preview, video preview etc. If active layer needs to handle own events and lock event handlers of the other layers, key-layers-react can help to resolve this task.
 
 # Getting Started
 To connect the component with the layer use HOC imported from key-layers-react
@@ -8,8 +8,8 @@ To connect the component with the layer use HOC imported from key-layers-react
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-// Import HOC
-import withKeyLayer from 'react-key-layers';
+// Import HOC from key-layers-react
+import { withKeyLayer } from 'react-key-layers';
 
 import NewTaskModal from '../NewTaskModal';
 import './ListHeader.scss';
@@ -63,6 +63,50 @@ ListHeader.propTypes = {
 export default withKeyLayer(1)(ListHeader);
 ```
 
+Also hook can be used in the same way.
+
+```javascript
+import React, { useCallback, useEffect } from 'react';
+import PropTypes from 'prop-types';
+
+// Import hook from key-layers-react
+import { useKeyLayers } from 'react-key-layers';
+
+import NewTaskModal from '../NewTaskModal';
+import './ListHeader.scss';
+
+const ListHeader = ({ addModal }) => {
+  const [addKeyListener, removeKeyListener] = useKeyLayers(1);
+  
+  const newTaskHandler = useCallback(() => {
+    addModal(<NewTaskModal />);
+  }, [addModal]);
+
+  useEffect(() => {
+    addKeyListener('keyDown', (e) => {
+      console.log('Key down of the layer 1', e);
+    });
+    addKeyListener('keyDown', (e) => {
+      console.log('"w" and "e" keys down of the layer 2', e);
+    }, { codes: [87, 69] });
+  }, []);
+
+  useEffect(() => {
+    addKeyListener('keyRelease', newTaskHandler, { code: 78 });
+    return () => removeKeyListener('keyRelease', newTaskHandler);
+  }, [newTaskHandler]);
+  
+  return (
+    <div className="ListHeader">
+      <button onClick={newTaskHandler} className="button">Add new Task</button>
+      <div className="ListHeader__helpText">
+        <span>Hit the "N" key for open the "New task dialog".</span>
+      </div>
+    </div>
+  );
+}
+```
+
 This example shows how to connect component with the layer (1) and add different types of the key listeners such as:
 * Key down listener for any key
 * "w" and "e" keys together down listener
@@ -71,6 +115,11 @@ This example shows how to connect component with the layer (1) and add different
 HOC takes two parameters and returns configured HOC.
 ```javascript
 export default withKeyLayer(layerIndex, componentConfig)(ListHeader);
+```
+
+As well as HOC, hook takes same two parameters.
+```javascript
+const [addKeyListener, removeKeyListener] = useKeyLayers(layerIndex, componentConfig);
 ```
 
 ***layerIndex*** - it's a something like z-index. Active layer will be with the biggest layerIndex.
@@ -82,6 +131,8 @@ export default withKeyLayer(layerIndex, componentConfig)(ListHeader);
 ***componentConfig.addListenerMethodName*** - it's a name for the add key listener function, that pass to the props. By default, this value sets to "addKeyListener".
 
 ***componentConfig.removeListenerMethodName*** - it's a name for the remove key listener function, that pass to the props. By default, this value sets to "removeKeyListener".
+
+### <font color="orange">All documentation below use examples based on HOCs, but hook has same API and can be used in the same way</font>
 
 # Layer execute priority
 **Layer** - it's an abstract plane with which Emitter instances connecting.
@@ -101,7 +152,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 // Import HOC
-import withKeyLayer from 'react-key-layers';
+import { withKeyLayer } from 'react-key-layers';
 
 class TestFirst extends Component {
   componentDidMount() {
@@ -172,7 +223,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 // Import HOC
-import withKeyLayer from 'react-key-layers';
+import { withKeyLayer } from 'react-key-layers';
 
 class TestFirst extends Component {
   componentDidMount() {
@@ -263,7 +314,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 // Import HOC
-import withKeyLayer, { EMITTER_FORCE_LAYER_TYPE } from 'react-key-layers';
+import { withKeyLayer, EMITTER_FORCE_LAYER_TYPE } from 'react-key-layers';
 
 class TestFirst extends Component {
   componentDidMount() {
@@ -340,7 +391,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 // Import HOC
-import withKeyLayer, { EMITTER_FORCE_LAYER_TYPE } from 'react-key-layers';
+import { withKeyLayer, EMITTER_FORCE_LAYER_TYPE } from 'react-key-layers';
 
 class Hight extends Component {
   componentDidMount() {
@@ -458,7 +509,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 // Import HOC
-import withKeyLayer, { EMITTER_FORCE_LAYER_TYPE } from 'react-key-layers';
+import { withKeyLayer, EMITTER_FORCE_LAYER_TYPE } from 'react-key-layers';
 
 class TestFirst extends Component {
   componentDidMount() {
@@ -566,7 +617,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 // Import HOC
-import withKeyLayer from 'react-key-layers';
+import { withKeyLayer } from 'react-key-layers';
 
 class TestFirst extends Component {
   componentDidMount() {
@@ -607,7 +658,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 // Import HOC
-import withKeyLayer, { EMITTER_FORCE_LAYER_TYPE } from 'react-key-layers';
+import { withKeyLayer, EMITTER_FORCE_LAYER_TYPE } from 'react-key-layers';
 
 class TestForce extends Component {
   componentDidMount() {
@@ -648,7 +699,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 // Import HOC
-import withKeyLayer, { setConfig } from 'react-key-layers';
+import { withKeyLayer, setConfig } from 'react-key-layers';
 
 setConfig({
   releaseDelay: 250,
